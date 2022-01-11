@@ -14,7 +14,7 @@ import { load } from "cheerio";
 
 // Server express connect
 const app = express();
-const port = proces.env.PROT || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`)
 })
