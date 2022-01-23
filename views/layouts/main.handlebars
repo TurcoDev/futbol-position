@@ -71,18 +71,6 @@
     {{!-- <p>
   {{items}}
 </p> --}}
-    <script type="text/javascript">
-      let elements = document.getElementById("rowTbody").children;
-      console.log(elements);
-      
-      for (let i = 0; i < elements.length; i++) {
-        if (i <= 3 ){
-          elements[i].style.backgroundColor = "green";
-        }else
-          if (i >= elements.length - 4 ) {
-            elements[i].style.backgroundColor = "orange"; }
-      }
-    </script>
-    {{! <script src="js/scripts.js"></script> }}
+<script src="/static/js/scripts.js"></script>
   </body>
 </html>

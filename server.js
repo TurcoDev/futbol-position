@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import  bodyParser from 'body-parser';
 import express from 'express';
 import { engine } from 'express-handlebars';
@@ -6,6 +5,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import fetch from "node-fetch";
 import { load } from "cheerio";
+import posFutbolModel from './models/futbolTeamModel.js';
 
 
 /**************************************************** 
@@ -108,9 +108,9 @@ const getFutbolList = async () => {
     }
   });
   // Delete elements of positions collection
-  eliminarTodos();
+  deleteAll();
   // Insert positions in database
-  insertarVarios(positionsDB);
+  // insert(positionsDB);
 };
 
 // invoking the main function
@@ -121,60 +121,24 @@ setInterval(getFutbolList, time);
 
 // Send information to view
 app.get('/', async (req, res) => {
-  // const positions = await positionModel.find(); // tipo de dato incompatible
+  // const positions = await positionModel.find(); // tipo de dato incompatible VER!!
   res.render('home', {titulo: '<h1>Inicio con HBS</h1>',
   items: positionsDB});
 });
 
 /**************************************************** 
-// DB Connection (model and schema)
+// Querys Data Base
 *****************************************************/ 
-
-// Database connection
- const url =
- "mongodb+srv://root:dontpass@cluster0.t95xw.mongodb.net/futbol?retryWrites=true&w=majority";
-mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
-
-const conn = mongoose.connection;
-conn.on('connected', function() {
-    console.log('database is connected successfully');
-});
-conn.on('disconnected',function(){
-    console.log('database is disconnected successfully');
-})
-conn.on('error', console.error.bind(console, 'connection error:'));
-
-// create an schema
-var tablePositionSchema = new mongoose.Schema({
-  pos: String,
-  escudo: String,
-  equipo: String,
-  pj: String,
-  g: String,
-  e: String,
-  p: String,
-  gf: String,
-  gc: String,
-  dg: String,
-  pts: String,
-}, {versionKey: false});
-
-// create an model
-var positionModel = mongoose.model('positions',tablePositionSchema);
-
-/**************************************************** 
-// Consultas a la base de datos
-*****************************************************/ 
-// Mostrar
-const mostrar = async () => {
-  const positions = await positionModel.find();// '', "pos	equipo	pj	g	e	p	gf	gc	dg	pts"
-  // console.log(positions);
+// Get elements
+const getElements = async () => {
+  const positions = await posFutbolModel.find();// '', "pos	equipo	pj	g	e	p	gf	gc	dg	pts"
+  console.log(positions);
   return positions;
 }
 
-// Insertar
-const insertar = async () => {
-  const equipo = new positionModel({
+// Insert test
+const insertTest = async () => {
+  const equipo = new posFutbolModel({
     pos: '1',
     escudo: 'escudo1',
     equipo: 'Boca',
@@ -191,20 +155,20 @@ const insertar = async () => {
   console.log(result);
 }
 
-// Insertar
-const insertar2 = async (element) => {
-    const equipo = new positionModel(element);
+// insert one element
+const insertElement = async (element) => {
+    const equipo = new posFutbolModel(element);
     const result = await equipo.save();
 }
 
-// Insertar varios
-const insertarVarios = async (equipos) => {
-    const result = await positionModel.insertMany(equipos);
+// insert many elements
+const insert = async (equipos) => {
+    const result = await posFutbolModel.insertMany(equipos);
 }
 
-// Actualizar
-const actualizar = async (id) => {
-  const equipo = await positionModel.updateOne({_id:id},
+// update element mach id
+const updateById = async (id) => {
+  const equipo = await posFutbolModel.updateOne({_id:id},
     {
       $set:{
         pos: '20 modificado',
@@ -214,21 +178,21 @@ const actualizar = async (id) => {
   console.log(equipo);
 }
 
-// Eliminar
-const eliminar = async (id) => {
-  const equipo = await positionModel.deleteOne({_id:id});
+// delete mach id
+const delOne = async (id) => {
+  const equipo = await posFutbolModel.deleteOne({_id:id});
   console.log(equipo);
 }
 
-// Eliminar todos
-const eliminarTodos = async () => {
-  const equipo = await positionModel.deleteMany({});
+// delete all
+const deleteAll = async () => {
+  const equipo = await posFutbolModel.deleteMany({});
   // console.log(equipo);
 }
 
-// Actualizar todos por posicion
+// Update by position
 const updateByPos = async (pos) => {
-  const equipo = await positionModel.updateMany({pos: pos},
+  const equipo = await posFutbolModel.updateMany({pos: pos},
     {
       $set:{
         equipo: 'YOYO modificado',
@@ -237,15 +201,3 @@ const updateByPos = async (pos) => {
     });
   console.log(equipo);
 }
-
-
-// Llamadaa a procedimientos
-// insertar();
-// insertarVarios(positionsDB);
-// mostrar();
-// actualizar('61dc7d18a08c01f953aa149b');
-// eliminar('61dc7d18a08c01f953aa149b');
-// eliminarTodos();
-// updateByPos('1');
-
-
